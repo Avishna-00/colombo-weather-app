@@ -1,26 +1,127 @@
-const Weather = ({ data }) => {
+import { Sun, Cloud, CloudRain, Wind, Eye, Thermometer, Droplets, Gauge, MapPin, RefreshCw } from 'lucide-react';
+
+// Weather icon mapping
+const getWeatherIcon = (condition) => {
+  const iconMap = {
+    'sunny': Sun,
+    'clear': Sun,
+    'partly cloudy': Cloud,
+    'cloudy': Cloud,
+    'overcast': Cloud,
+    'rain': CloudRain,
+    'drizzle': CloudRain,
+    'light rain': CloudRain,
+    'moderate rain': CloudRain,
+    'heavy rain': CloudRain,
+  };
+  
+  const conditionLower = condition.toLowerCase();
+  for (const [key, icon] of Object.entries(iconMap)) {
+    if (conditionLower.includes(key)) return icon;
+  }
+  return Cloud;
+  };
+
+  
+
+
+const Weather = ({ data, onRefresh }) => {
   const { location, current } = data;
-  const localTime = new Date(location.localtime);
-  const formattedTime = localTime.toLocaleString('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  });
+  const WeatherIcon = getWeatherIcon(current.condition.text);
+
+  // const formattedTime = localTime.toLocaleString('en-US', {
+  //   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  //   hour: '2-digit', minute: '2-digit'
+  // });
+  const formatTime = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const weatherDetails = [
+    { icon: Wind, label: 'Wind Speed', value: `${current.wind_kph} km/h` },
+    { icon: Eye, label: 'Visibility', value: `${current.vis_km} km` },
+    { icon: Droplets, label: 'Humidity', value: `${current.humidity}%` },
+    { icon: Gauge, label: 'Pressure', value: `${current.pressure_mb} mb` },
+  ];
 
   return (
-    <div className="container">
-      <h1 className="city">{location.name}</h1>
-      <p className="date">{formattedTime}</p>
+    <div className="app-background">
+      <div className="weather-container">
+        {/* Main Weather Card */}
+        <div className="weather-card">
+          {/* Header */}
+          <div className="weather-header">
+            <div className="location-info">
+              <MapPin className="location-icon" />
+              <h1 className="city-name">{location.name}</h1>
+            </div>
+            <button onClick={onRefresh} className="refresh-button">
+              <RefreshCw className="refresh-icon" />
+            </button>
+          </div>
 
-      <div className="main-weather">
-        <img src={current.condition.icon} alt="weather icon" />
-        <h2 className="temp">{current.temp_c}°C</h2>
-        <p className="condition">{current.condition.text}</p>
-      </div>
+          {/* Date */}
+          <p className="weather-date">{formatTime(location.localtime)}</p>
 
-      <div className="details">
-        <p><strong>Humidity:</strong> {current.humidity}%</p>
-        <p><strong>Wind Speed:</strong> {current.wind_kph} km/h</p>
-        <p><strong>UV Index:</strong> {current.uv}</p>
+          {/* Main Weather Display */}
+          <div className="main-weather">
+            <div className="weather-icon-container">
+              <WeatherIcon className="weather-icon" />
+              <div className="weather-glow"></div>
+            </div>
+            <div className="temperature">
+              {Math.round(current.temp_c)}°
+            </div>
+            <p className="condition">{current.condition.text}</p>
+            <p className="feels-like">
+              Feels like {Math.round(current.feelslike_c)}°C
+            </p>
+          </div>
+
+          {/* Temperature Range */}
+          <div className="temp-info-bar">
+            <div className="temp-info-content">
+              <div className="temp-info-details">
+                <Thermometer className="temp-info-icon" />
+                <span className="temp-info-text">
+                  UV Index: {current.uv} | Wind: {current.wind_dir}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Weather Details Grid - Inside Main Card */}
+          <div className="weather-details-grid">
+            {weatherDetails.map((detail, index) => {
+              const IconComponent = detail.icon;
+              return (
+                <div key={index} className="weather-detail-card">
+                  <div className="weather-detail-content">
+                    <div className="weather-detail-icon-wrapper">
+                      <IconComponent className="weather-detail-icon" />
+                    </div>
+                    <div className="weather-detail-info">
+                      <span className="weather-detail-label">{detail.label}</span>
+                      <span className="weather-detail-value">{detail.value}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="weather-footer">
+          <p className="last-updated">
+            Last updated: {new Date(current.last_updated).toLocaleTimeString()}
+          </p>
+        </div>
       </div>
     </div>
   );
