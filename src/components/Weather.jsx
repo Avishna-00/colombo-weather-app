@@ -1,10 +1,10 @@
-import { Sun, Cloud, CloudRain, Wind, Eye, Thermometer, Droplets, Gauge, MapPin, RefreshCw } from 'lucide-react';
+import { Sun, Moon, Cloud, CloudRain, Wind, Eye, Thermometer, Droplets, Gauge, MapPin, RefreshCw } from 'lucide-react';
 
 // Weather icon mapping
 const getWeatherIcon = (condition) => {
   const iconMap = {
     'sunny': Sun,
-    'clear': Sun,
+    'clear': Moon,
     'partly cloudy': Cloud,
     'cloudy': Cloud,
     'overcast': Cloud,
@@ -22,23 +22,18 @@ const getWeatherIcon = (condition) => {
   return Cloud;
   };
 
-  
-
-
 const Weather = ({ data, onRefresh }) => {
   const { location, current } = data;
   const WeatherIcon = getWeatherIcon(current.condition.text);
 
-  // const formattedTime = localTime.toLocaleString('en-US', {
-  //   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  //   hour: '2-digit', minute: '2-digit'
-  // });
   const formatTime = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -89,7 +84,7 @@ const Weather = ({ data, onRefresh }) => {
               <div className="temp-info-details">
                 <Thermometer className="temp-info-icon" />
                 <span className="temp-info-text">
-                  UV Index: {current.uv} | Wind: {current.wind_dir}
+                  UV Index: {current.uv} | Wind Direction: {current.wind_dir}
                 </span>
               </div>
             </div>
