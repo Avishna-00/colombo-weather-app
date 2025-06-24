@@ -12,28 +12,38 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function fetchWeather() {
-      try {
-        const response = await fetch(
+  const fetchWeather = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(
           `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${CITY}&aqi=no`
-        );
-        if (!response.ok) throw new Error("Failed to fetch weather");
-        const data = await response.json();
+      );
+      if (!response.ok) throw new Error("Failed to fetch weather");
+      const data = await response.json();
         setWeather(data);
-      } catch (err) {
+    } catch (err) {
         setError(err.message);
-      } finally {
+    } finally {
         setLoading(false);
-      }
-    }
+    }  
+  };
 
+  useEffect(() => {
     fetchWeather();
   }, []);
 
+  const handleRetry = () => {
+    fetchWeather();
+  };
+
+  const handleRefresh = () => {
+    fetchWeather();
+  };
+
   if (loading) return <Loading />;
-  if (error) return <Error message={error} />;
-  return <Weather data={weather} />;
+  if (error) return <Error message={error} onRetry={handleRetry} />;
+  return <Weather data={weather} onRefresh={handleRefresh} />;
 }
 
 export default App;
