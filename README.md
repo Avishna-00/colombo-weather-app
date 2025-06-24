@@ -1,4 +1,4 @@
-🌤️ Colombo Weather App
+**🌤️ Colombo Weather App**
 
 A simple and responsive weather app built with React and Vite, using data from WeatherAPI.com (https://www.weatherapi.com/). It displays the current weather conditions for Colombo, Sri Lanka.
 
